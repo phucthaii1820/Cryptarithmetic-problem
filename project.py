@@ -1,5 +1,7 @@
 from typing import Tuple
+import time
 count = 0
+a = 1
 
 def readFile(fileName):
     f = open(fileName, "r")
@@ -111,46 +113,51 @@ def isManyValidate(attributes, result, assignment, letters):
         if sum%10 != assignment.get(result[0]):
             return False
     
-    #test
-    sum = 0
-    carry = 0
-    if len(letters) == len(assignment):
-        #print(assignment)
-        for index in range(maxLength):
-            sum = 0
-            for i in range(len(attributes)):
-                if length[i] > index:
-                        sum += assignment.get(attributes[i][index])
-            if (sum + carry)%10 != assignment.get(result[index]):
-                return False
-            carry = (sum + carry)//10
+    # #test
+    # sum = 0
+    # carry = 0
+    # if len(letters) == len(assignment):
+    #     #print(assignment)
+    #     for index in range(maxLength):
+    #         sum = 0
+    #         for i in range(len(attributes)):
+    #             if length[i] > index:
+    #                     sum += assignment.get(attributes[i][index])
+    #         if (sum + carry)%10 != assignment.get(result[index]):
+    #             return False
+    #         carry = (sum + carry)//10
             
-        if carry == 0 and length[-1] > maxLength:
-            return False
+    #     if carry == 0 and length[-1] > maxLength:
+    #         return False
          
-    #test
-    else:
-        for index in range(maxLength):
+    # #test
+    # else:
+    # for index in range(maxLength):
+    #     check = False
+    #     for i in range(len(attributes)):
+    #         if length[i] > index:
+    #             if assignment.get(attributes[i][index]) is None:
+    #                 check = True
+    #     if check:
+    #         continue
 
-            check = False
-            for i in range(len(attributes)):
-                if length[i] > index:
-                    if assignment.get(attributes[i][index]) is None:
-                        check = True
-            if check:
-                continue
+    #     if assignment.get(result[index]) is None:
+    #         continue
+        
+    #     sum = 0
+    #     for i in range(len(attributes)):
+    #         if length[i] > index:
+    #             if assignment.get(attributes[i][index]) is not None:
+    #                 sum += assignment.get(attributes[i][index])
+        
+    #     if sum  % 10 + len(attributes)-1 < assignment.get(result[index]):
+    #         return False
 
-            if assignment.get(result[index]) is None:
-                continue
-            
-            sum = 0
-            for i in range(len(attributes)):
-                if length[i] > index:
-                    if assignment.get(attributes[i][index]) is not None:
-                        sum += assignment.get(attributes[i][index])
-            
-            if sum  % 10 + len(attributes)-1 < assignment.get(result[index]):
-                return False
+    #     if sum > 10:
+    #         if assignment.get(result[index]) + 10*(len(attributes)-1) < sum:
+    #             return False
+
+
 
     return True
 
@@ -182,13 +189,13 @@ def solveCrypta(letters, assignment, possibleDigits, attributes, result):
     if countAssignRight(possibleDigits) == len(letters):
         global count
         count += 1
-        print(assignment)
+        #print(assignment)
         if count > 2899000:
             print("NO SOLUTION")
             exit()
         if (checkEquation(attributes, result, assignment)) == True:
-            print(assignment)
             print(count)
+            print(assignment)
             return True
         return False
 
@@ -201,7 +208,7 @@ def solveCrypta(letters, assignment, possibleDigits, attributes, result):
         if possibleDigits[value] == False: 
             assignment = assignment.copy()
             assignment[letter] = value
-            if isValidate(attributes, result, assignment, letters) == True:
+            if isManyValidate(attributes, result, assignment, letters) == True:
                 possibleDigits[value] = True
                 check = solveCrypta(letters, assignment, possibleDigits, attributes, result)
                 if check == True:
@@ -268,36 +275,41 @@ if __name__ == "__main__":
     operator = arrayOperator(equation)
     print(operator)
 
-    # letters = []
-    # option = input("Enter operator: ")
+    letters = []
+    option = input("Enter operator: ")
     
-    # #Take attributes of equation
-    # if option == 'plus':
-    #     attributes = attributes.upper().split('+')
-    # elif option == 'subtract':
-    #     attributes = attributes.upper().split('-')
-    #     result = convertSubtract(attributes, result)
+    #Take attributes of equation
+    if option == 'plus':
+        attributes = attributes.upper().split('+')
+    elif option == 'subtract':
+        attributes = attributes.upper().split('-')
+        result = convertSubtract(attributes, result)
 
-    # #Take unique letters
-    # for attribute in attributes:
-    #     for word in attribute:
-    #         if word not in letters:
-    #             letters.append(word)
+    #Take unique letters
+    for attribute in attributes:
+        for word in attribute:
+            if word not in letters:
+                letters.append(word)
 
-    # #Reverse attributes' elements
-    # for i in range(len(attributes)):
-    #     attributes[i] = attributes[i][::-1]
+    #Reverse attributes' elements
+    for i in range(len(attributes)):
+        attributes[i] = attributes[i][::-1]
 
-    # #Reverse result element
-    # result = result[::-1]
+    #Reverse result element
+    result = result[::-1]
 
-    # for word in result:
-    #     if word not in letters:
-    #         letters.append(word)
+    for word in result:
+        if word not in letters:
+            letters.append(word)
     
     
-    # possibleDigits = [False] * 10
-    # solveCrypta(letters, {}, possibleDigits, attributes, result)
+    possibleDigits = [False] * 10
+    start_time = time.time()
+    solveCrypta(letters, {}, possibleDigits, attributes, result)
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+
     
     
     
