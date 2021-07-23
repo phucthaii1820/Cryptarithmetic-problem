@@ -229,7 +229,6 @@ def convertEquation(equation):
                 if equation[index - 1] == '-':
                     roundBracket.append(equation[index])
                     newEquation.pop()
-                    newEquation.append('+')
                     checkSubtract = True
                     continue
                 elif equation[index - 1] == '+':
@@ -253,7 +252,7 @@ def convertEquation(equation):
 def arrayOperator(equation):
     operator = []
     for index in range(len(equation)):
-        if not equation[index].isdigit():
+        if not equation[index].isalpha():
             operator.append(equation[index])
     return operator
 
@@ -263,40 +262,42 @@ if __name__ == "__main__":
 
     #Except round brackets
     equation = convertEquation(attributes)
+    print(equation)
 
     #An operation array
     operator = arrayOperator(equation)
+    print(operator)
 
-    letters = []
-    option = input("Enter operator: ")
+    # letters = []
+    # option = input("Enter operator: ")
     
-    #Take attributes of equation
-    if option == 'plus':
-        attributes = attributes.upper().split('+')
-    elif option == 'subtract':
-        attributes = attributes.upper().split('-')
-        result = convertSubtract(attributes, result)
+    # #Take attributes of equation
+    # if option == 'plus':
+    #     attributes = attributes.upper().split('+')
+    # elif option == 'subtract':
+    #     attributes = attributes.upper().split('-')
+    #     result = convertSubtract(attributes, result)
 
-    #Take unique letters
-    for attribute in attributes:
-        for word in attribute:
-            if word not in letters:
-                letters.append(word)
+    # #Take unique letters
+    # for attribute in attributes:
+    #     for word in attribute:
+    #         if word not in letters:
+    #             letters.append(word)
 
-    #Reverse attributes' elements
-    for i in range(len(attributes)):
-        attributes[i] = attributes[i][::-1]
+    # #Reverse attributes' elements
+    # for i in range(len(attributes)):
+    #     attributes[i] = attributes[i][::-1]
 
-    #Reverse result element
-    result = result[::-1]
+    # #Reverse result element
+    # result = result[::-1]
 
-    for word in result:
-        if word not in letters:
-            letters.append(word)
+    # for word in result:
+    #     if word not in letters:
+    #         letters.append(word)
     
     
-    possibleDigits = [False] * 10
-    solveCrypta(letters, {}, possibleDigits, attributes, result)
+    # possibleDigits = [False] * 10
+    # solveCrypta(letters, {}, possibleDigits, attributes, result)
     
     
     
