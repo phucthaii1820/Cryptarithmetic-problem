@@ -208,6 +208,54 @@ def solveCrypta(letters, assignment, possibleDigits, attributes, result):
                     return True
             possibleDigits[value] = False
                 
+def convertSubtract(attributes, result):
+    temp = attributes[0]
+    attributes[0] = result
+    result = temp
+    return result
+
+def convertEquation(equation):
+    newEquation = []
+    roundBracket = []
+    checkSubtract = False
+    
+
+    for index in range(len(equation)):
+        if equation[index] == '(':
+            if index == 0:
+                roundBracket.append(equation[index])
+                continue
+            else:
+                if equation[index - 1] == '-':
+                    roundBracket.append(equation[index])
+                    newEquation.pop()
+                    newEquation.append('+')
+                    checkSubtract = True
+                    continue
+                elif equation[index - 1] == '+':
+                    roundBracket.append(equation[index])
+                    continue
+        elif equation[index] == ')':
+            if roundBracket is not None:
+                roundBracket.pop()
+                checkSubtract = False
+                continue
+        if roundBracket is not None and checkSubtract == True:
+            if equation[index] == '-':
+                newEquation.append('+')  
+                continue
+            elif equation[index] == '+':
+                newEquation.append('-') 
+                continue
+        newEquation.append(equation[index])     
+    return ''.join(str(ele) for ele in newEquation)
+
+def arrayOperator(equation):
+    operator = []
+    for index in range(len(equation)):
+        if not equation[index].isdigit():
+            operator.append(equation[index])
+    return operator
 
 if __name__ == "__main__":
     equation = readFile("input.txt")
