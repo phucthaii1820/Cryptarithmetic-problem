@@ -259,10 +259,23 @@ def arrayOperator(equation):
 
 if __name__ == "__main__":
     equation = readFile("input.txt")
-    letters = []
-    #Take attributes of equation
     attributes, result = equation.split('=')
-    attributes = attributes.upper().split('+')
+
+    #Except round brackets
+    equation = convertEquation(attributes)
+
+    #An operation array
+    operator = arrayOperator(equation)
+
+    letters = []
+    option = input("Enter operator: ")
+    
+    #Take attributes of equation
+    if option == 'plus':
+        attributes = attributes.upper().split('+')
+    elif option == 'subtract':
+        attributes = attributes.upper().split('-')
+        result = convertSubtract(attributes, result)
 
     #Take unique letters
     for attribute in attributes:
@@ -270,9 +283,11 @@ if __name__ == "__main__":
             if word not in letters:
                 letters.append(word)
 
+    #Reverse attributes' elements
     for i in range(len(attributes)):
         attributes[i] = attributes[i][::-1]
 
+    #Reverse result element
     result = result[::-1]
 
     for word in result:
