@@ -11,7 +11,6 @@ def readFile(fileName):
 
 def isValidate(attributes, result, assignment, letters):
     length = 0
-    carry = 0
     len_1 = len(attributes[0])
     len_2 = len(attributes[1])
     len_3 = len(result)
@@ -105,30 +104,31 @@ def isManyValidate(attributes, result, assignment, letters):
     for i in range(len(attributes)):
         if assignment.get(attributes[i][0]) is None:
                     check = False
+
     #kiểm tra tổng % 10 của số cuối của các phần tử có bằng kết quả không
     if check and assignment.get(result[0]) is not None:
         sum = 0
         for i in range(len(attributes)):
             sum += assignment.get(attributes[i][0])
-        if sum%10 != assignment.get(result[0]):
+        if sum % 10 != assignment.get(result[0]):
             return False
     
-    # #test
-    # sum = 0
-    # carry = 0
-    # if len(letters) == len(assignment):
-    #     #print(assignment)
-    #     for index in range(maxLength):
-    #         sum = 0
-    #         for i in range(len(attributes)):
-    #             if length[i] > index:
-    #                     sum += assignment.get(attributes[i][index])
-    #         if (sum + carry)%10 != assignment.get(result[index]):
-    #             return False
-    #         carry = (sum + carry)//10
+    #test
+    sum = 0
+    carry = 0
+    if len(letters) == len(assignment):
+        #print(assignment)
+        for index in range(maxLength):
+            sum = 0
+            for i in range(len(attributes)):
+                if length[i] > index:
+                        sum += assignment.get(attributes[i][index])
+            if (sum + carry) % 10 != assignment.get(result[index]):
+                return False
+            carry = (sum + carry)//10
             
-    #     if carry == 0 and length[-1] > maxLength:
-    #         return False
+        if carry == 0 and length[-1] > maxLength:
+            return False
          
     # #test
     # else:
@@ -156,9 +156,6 @@ def isManyValidate(attributes, result, assignment, letters):
     #     if sum > 10:
     #         if assignment.get(result[index]) + 10*(len(attributes)-1) < sum:
     #             return False
-
-
-
     return True
 
 def stringToDec(string, assignment):
@@ -189,12 +186,7 @@ def solveCrypta(letters, assignment, possibleDigits, attributes, result):
     if countAssignRight(possibleDigits) == len(letters):
         global count
         count += 1
-        #print(assignment)
-        if count > 2899000:
-            print("NO SOLUTION")
-            exit()
         if (checkEquation(attributes, result, assignment)) == True:
-            print(count)
             print(assignment)
             return True
         return False
@@ -263,6 +255,15 @@ def arrayOperator(equation):
             operator.append(equation[index])
     return operator
 
+def findMaxLength(attributes, result):
+    maxLength = len(result)
+
+    for attribute in attributes:
+        if len(attribute) > maxLength:
+            maxLength = len(attribute)
+    return maxLength
+        
+
 if __name__ == "__main__":
     equation = readFile("input.txt")
     attributes, result = equation.split('=')
@@ -285,12 +286,6 @@ if __name__ == "__main__":
         attributes = attributes.upper().split('-')
         result = convertSubtract(attributes, result)
 
-    #Take unique letters
-    for attribute in attributes:
-        for word in attribute:
-            if word not in letters:
-                letters.append(word)
-
     #Reverse attributes' elements
     for i in range(len(attributes)):
         attributes[i] = attributes[i][::-1]
@@ -298,10 +293,14 @@ if __name__ == "__main__":
     #Reverse result element
     result = result[::-1]
 
-    for word in result:
-        if word not in letters:
-            letters.append(word)
-    
+    #Take unique letters
+    maxLength = findMaxLength(attributes, result)
+    for i in range(maxLength):
+        for attribute in attributes:
+            if len(attribute) > i and attribute[i] not in letters:
+                letters.append(attribute[i])
+        if result[i] not in letters and len(result) > i:
+            letters.append(result[i])
     
     possibleDigits = [False] * 10
     start_time = time.time()
