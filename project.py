@@ -1,7 +1,7 @@
 from typing import Tuple
 import time
-count = 0
-a = 1
+start_time = 0
+end_time = 0
 
 def readFile(fileName):
     f = open(fileName, "r")
@@ -60,6 +60,12 @@ def isValidate(attributes, result, assignment, letters):
 
 
 def isManyValidate(attributes, result, assignment, letters):
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    if(elapsed_time > 300):
+        print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+        print('No solution')
+        exit()
     length = []
     for i in range(len(attributes)):
         length.append(len(attributes[i]))
@@ -93,10 +99,22 @@ def isManyValidate(attributes, result, assignment, letters):
         
         if sum > 9:
             return False
-    #Nếu độ dài của kết quả lớn hơn tất cả phần tử thì số ngoài cùng của kết quả phài <= biến nhớ
+    # #Nếu độ dài của kết quả lớn hơn tất cả phần tử thì số ngoài cùng của kết quả phài <= biến nhớ
+    # if length[-1] > maxLength:
+    #     if assignment.get(result[-1]) is not None:
+    #         if assignment.get(result[-1]) > len(attributes) - 1:
+    #             return False
+
+        #Nếu độ dài của kết quả lớn hơn tất cả phần tử thì số ngoài cùng của kết quả phài <= biến nhớ
     if length[-1] > maxLength:
+        carry = 0
+
+        for i in range(len(length)-1):
+            if length[i] == length[-1]-1:
+                carry += 1
+                
         if assignment.get(result[-1]) is not None:
-            if assignment.get(result[-1]) > len(attributes) - 1:
+            if assignment.get(result[-1]) > carry - 1:
                 return False
 
     #kiểm tra các số trong cùng của các phần tử có giá trị không
@@ -113,7 +131,6 @@ def isManyValidate(attributes, result, assignment, letters):
         if sum % 10 != assignment.get(result[0]):
             return False
     
-    #test
     sum = 0
     carry = 0
     if len(letters) == len(assignment):
@@ -130,32 +147,6 @@ def isManyValidate(attributes, result, assignment, letters):
         if carry == 0 and length[-1] > maxLength:
             return False
          
-    # #test
-    # else:
-    # for index in range(maxLength):
-    #     check = False
-    #     for i in range(len(attributes)):
-    #         if length[i] > index:
-    #             if assignment.get(attributes[i][index]) is None:
-    #                 check = True
-    #     if check:
-    #         continue
-
-    #     if assignment.get(result[index]) is None:
-    #         continue
-        
-    #     sum = 0
-    #     for i in range(len(attributes)):
-    #         if length[i] > index:
-    #             if assignment.get(attributes[i][index]) is not None:
-    #                 sum += assignment.get(attributes[i][index])
-        
-    #     if sum  % 10 + len(attributes)-1 < assignment.get(result[index]):
-    #         return False
-
-    #     if sum > 10:
-    #         if assignment.get(result[index]) + 10*(len(attributes)-1) < sum:
-    #             return False
     return True
 
 def stringToDec(string, assignment):
@@ -184,8 +175,8 @@ def countAssignRight(digits):
 def solveCrypta(letters, assignment, possibleDigits, attributes, result):
 
     if countAssignRight(possibleDigits) == len(letters):
-        global count
-        count += 1
+        # global count
+        # count += 1
         if (checkEquation(attributes, result, assignment)) == True:
             print(assignment)
             return True
@@ -304,7 +295,8 @@ if __name__ == "__main__":
     
     possibleDigits = [False] * 10
     start_time = time.time()
-    solveCrypta(letters, {}, possibleDigits, attributes, result)
+    if(not solveCrypta(letters, {}, possibleDigits, attributes, result)):
+        print("hehe")
     end_time = time.time()
     elapsed_time = end_time - start_time
     print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
