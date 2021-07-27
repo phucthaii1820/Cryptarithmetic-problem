@@ -60,12 +60,14 @@ def isValidate(attributes, result, assignment, letters):
 
 
 def isManyValidate(attributes, result, assignment, letters):
+    
     end_time = time.time()
     elapsed_time = end_time - start_time
-    if(elapsed_time > 300):
+    if(elapsed_time > 300): #5 mins
         print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
         print('No solution')
         exit()
+    
     length = []
     for i in range(len(attributes)):
         length.append(len(attributes[i]))
@@ -99,20 +101,15 @@ def isManyValidate(attributes, result, assignment, letters):
         
         if sum > 9:
             return False
-    # #Nếu độ dài của kết quả lớn hơn tất cả phần tử thì số ngoài cùng của kết quả phài <= biến nhớ
-    # if length[-1] > maxLength:
-    #     if assignment.get(result[-1]) is not None:
-    #         if assignment.get(result[-1]) > len(attributes) - 1:
-    #             return False
 
-        #Nếu độ dài của kết quả lớn hơn tất cả phần tử thì số ngoài cùng của kết quả phài <= biến nhớ
+    #Nếu độ dài của kết quả lớn hơn tất cả phần tử thì số ngoài cùng của kết quả phài <= biến nhớ
     if length[-1] > maxLength:
         carry = 0
 
         for i in range(len(length)-1):
             if length[i] == length[-1]-1:
                 carry += 1
-                
+
         if assignment.get(result[-1]) is not None:
             if assignment.get(result[-1]) > carry - 1:
                 return False
@@ -134,6 +131,8 @@ def isManyValidate(attributes, result, assignment, letters):
     sum = 0
     carry = 0
     if len(letters) == len(assignment):
+        # if not checkEquation(attributes, result, assignment, operator):
+        #     return False
         #print(assignment)
         for index in range(maxLength):
             sum = 0
@@ -149,6 +148,123 @@ def isManyValidate(attributes, result, assignment, letters):
          
     return True
 
+def isManyValidateTest(attributes, result, assignment, letters, operator):
+    
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    if(elapsed_time > 300): #5 mins
+        print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+        print('No solution')
+        exit()
+    
+    length = []
+    for i in range(len(attributes)):
+        length.append(len(attributes[i]))
+    length.append(len(result))
+
+    maxLength = 0
+    for i in range(len(length) -1):
+        # if length[i] > length[-1]:
+        #     return False
+        if maxLength < length[i]:
+            maxLength = length[i]
+    
+    # if maxLength - length[-1] > 1:
+    #     return False
+    
+
+    if assignment.get(result[- 1], None) == 0:
+        return False
+
+    for attribute in attributes:
+        if assignment.get(attribute[- 1], None) == 0:
+            return False
+
+    #checked
+    #kiểm tra nếu độ dài kết quả bằng bất kì phần tử nào thì tổng của các số ngoài cùng < 9
+    sum = 0
+    if length[-1] == maxLength:
+        for i in range(len(attributes)):
+            if length[i] == maxLength:
+                if assignment.get(attributes[i][-1]) is not None:
+                    if operator[i] == '+':
+                        sum += assignment.get(attributes[i][-1])
+                    else:
+                        sum -= assignment.get(attributes[i][-1])
+        
+        if sum > 9 or sum < 0:
+            return False
+
+
+    #checked
+    #Nếu độ dài của kết quả lớn hơn tất cả phần tử thì số ngoài cùng của kết quả phài <= biến nhớ
+    if length[-1] > maxLength:
+        carry = 0
+
+        for i in range(len(length)-1):
+            if length[i] == length[-1]-1 and operator[i] == '+':
+                carry += 1
+
+        if assignment.get(result[-1]) is not None:
+            if assignment.get(result[-1]) > carry - 1:
+                return False
+
+    #kiểm tra các số trong cùng của các phần tử có giá trị không
+    check = True
+    for i in range(len(attributes)):
+        if assignment.get(attributes[i][0]) is None:
+                    check = False
+
+    #checked
+    #kiểm tra tổng % 10 của số cuối của các phần tử có bằng kết quả không
+    if check and assignment.get(result[0]) is not None:
+        sum = 0
+        for i in range(len(attributes)):
+            if operator[i] == '+':
+                sum += assignment.get(attributes[i][0])
+            else:
+                sum -= assignment.get(attributes[i][0])
+            
+            if sum < 0:
+                sum += 10
+
+        if sum % 10 != assignment.get(result[0]):
+            return False
+    
+    sum = 0
+    carry = 0
+    if len(letters) == len(assignment):
+        if not checkEquation(attributes, result, assignment, operator):
+            return False
+        # for index in range(maxLength):
+        #     sum = carry
+        #     carry = 0
+        #     for i in range(len(attributes)):
+        #         if length[i] > index:
+        #             if operator[i] == '+':
+        #                 sum += assignment.get(attributes[i][index])
+        #             else:
+        #                 sum -= assignment.get(attributes[i][index])
+
+        #             if sum < 0:
+        #                 carry -= 1
+        #                 sum += 10
+        #     if length[-1] > index:
+        #         if sum % 10 != assignment.get(result[index]):
+        #             return False
+        #     else:
+        #         if sum != 0:
+        #             return False
+        #     if carry == 0:
+        #         carry = sum //10
+            
+        # if carry == 0 and length[-1] > maxLength:
+        #     return False
+         
+    return True
+
+
+
 def stringToDec(string, assignment):
     length = len(string)
     dec = 0
@@ -156,14 +272,17 @@ def stringToDec(string, assignment):
         dec += assignment[string[index]] * (10**(index))
     return dec
 
-def checkEquation(attributes, result, assignment):
-    sumAttri = 0
+def checkEquation(attributes, result, assignment, operator):
+    Attri = 0
     for i in range(len(attributes)):
-        sumAttri += stringToDec(attributes[i], assignment)
+        if operator[i] == '+':
+            Attri += stringToDec(attributes[i], assignment)
+        else :
+            Attri -= stringToDec(attributes[i], assignment)
     
     total = stringToDec(result, assignment)
 
-    return sumAttri == total
+    return Attri == total
 
 def countAssignRight(digits):
     count = 0
@@ -172,12 +291,10 @@ def countAssignRight(digits):
             count += 1
     return count
 
-def solveCrypta(letters, assignment, possibleDigits, attributes, result):
+def solveCrypta(letters, assignment, possibleDigits, attributes, result, operator):
 
     if countAssignRight(possibleDigits) == len(letters):
-        # global count
-        # count += 1
-        if (checkEquation(attributes, result, assignment)) == True:
+        if (checkEquation(attributes, result, assignment, operator)) == True:
             print(assignment)
             return True
         return False
@@ -193,7 +310,7 @@ def solveCrypta(letters, assignment, possibleDigits, attributes, result):
             assignment[letter] = value
             if isManyValidate(attributes, result, assignment, letters) == True:
                 possibleDigits[value] = True
-                check = solveCrypta(letters, assignment, possibleDigits, attributes, result)
+                check = solveCrypta(letters, assignment, possibleDigits, attributes, result, operator)
                 if check == True:
                     return True
             possibleDigits[value] = False
@@ -241,6 +358,7 @@ def convertEquation(equation):
 
 def arrayOperator(equation):
     operator = []
+    operator.append('+')
     for index in range(len(equation)):
         if not equation[index].isalpha():
             operator.append(equation[index])
@@ -290,12 +408,12 @@ if __name__ == "__main__":
         for attribute in attributes:
             if len(attribute) > i and attribute[i] not in letters:
                 letters.append(attribute[i])
-        if result[i] not in letters and len(result) > i:
+        if  len(result) > i and result[i] not in letters:
             letters.append(result[i])
     
     possibleDigits = [False] * 10
     start_time = time.time()
-    if(not solveCrypta(letters, {}, possibleDigits, attributes, result)):
+    if(not solveCrypta(letters, {}, possibleDigits, attributes, result, operator)):
         print("hehe")
     end_time = time.time()
     elapsed_time = end_time - start_time
