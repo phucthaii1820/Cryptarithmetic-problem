@@ -11,7 +11,7 @@ def readFile(fileName):
     f.close()
     return equation
 
-def isValidate(attributes, result, assignment, letters):
+def isValidate(attributes, result, assignment, letters, operator):
     length = 0
     len_1 = len(attributes[0])
     len_2 = len(attributes[1])
@@ -61,7 +61,7 @@ def isValidate(attributes, result, assignment, letters):
     return True
 
 
-def isManyValidate(attributes, result, assignment, letters):
+def isManyValidate(attributes, result, assignment, letters, operator):
     
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -309,7 +309,7 @@ def solveCrypta(letters, assignment, possibleDigits, attributes, result, operato
         if possibleDigits[value] == False: 
             assignment = assignment.copy()
             assignment[letter] = value
-            if isManyValidate(attributes, result, assignment, letters) == True:
+            if isManyValidateTest(attributes, result, assignment, letters, operator) == True:
                 possibleDigits[value] = True
                 check = solveCrypta(letters, assignment, possibleDigits, attributes, result, operator)
                 if check == True:
@@ -336,7 +336,6 @@ def convertEquation(equation):
             else:
                 if equation[index - 1] == '-':
                     roundBracket.append(equation[index])
-                    newEquation.pop()
                     checkSubtract = True
                     continue
                 elif equation[index - 1] == '+':
@@ -377,6 +376,12 @@ if __name__ == "__main__":
     equation = readFile("input.txt")
     attributes, result = equation.split('=')
 
+    #Except round brackets
+    equation = convertEquation(attributes)
+
+    #An operation array
+    operator = arrayOperator(equation)
+
     letters = []
     option = input("Enter operator: ")
     
@@ -386,17 +391,18 @@ if __name__ == "__main__":
     elif option == 'subtract':
         attributes = attributes.upper().split('-')
         result = convertSubtract(attributes, result)
+        print(result)
     elif option == "level 3":
-        #Except round brackets
-        equation = convertEquation(attributes)
         #Get elements
         attributes = []
+        word = ""
         for letter in equation:
             if letter.isalpha():
-                attributes.append(letter)
-        #An operation array
-        operator = arrayOperator(equation)
-
+                word += str(letter)
+            elif not letter.isalpha():
+                attributes.append(word)
+                word = ""
+        attributes.append(word)
 
     #Reverse attributes' elements
     for i in range(len(attributes)):
@@ -417,7 +423,7 @@ if __name__ == "__main__":
     possibleDigits = [False] * 10
     start_time = time.time()
     if(not solveCrypta(letters, {}, possibleDigits, attributes, result, operator)):
-        print("hehe")
+        print("None")
     end_time = time.time()
     elapsed_time = end_time - start_time
     print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
