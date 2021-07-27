@@ -1,5 +1,7 @@
 from typing import Tuple
 import time
+import re
+
 start_time = 0
 end_time = 0
 
@@ -234,36 +236,35 @@ def isManyValidateTest(attributes, result, assignment, letters, operator):
     sum = 0
     carry = 0
     if len(letters) == len(assignment):
-        if not checkEquation(attributes, result, assignment, operator):
-            return False
-        # for index in range(maxLength):
-        #     sum = carry
-        #     carry = 0
-        #     for i in range(len(attributes)):
-        #         if length[i] > index:
-        #             if operator[i] == '+':
-        #                 sum += assignment.get(attributes[i][index])
-        #             else:
-        #                 sum -= assignment.get(attributes[i][index])
-
-        #             if sum < 0:
-        #                 carry -= 1
-        #                 sum += 10
-        #     if length[-1] > index:
-        #         if sum % 10 != assignment.get(result[index]):
-        #             return False
-        #     else:
-        #         if sum != 0:
-        #             return False
-        #     if carry == 0:
-        #         carry = sum //10
-            
-        # if carry == 0 and length[-1] > maxLength:
+        # if not checkEquation(attributes, result, assignment, operator):
         #     return False
+        #print(assignment)
+        for index in range(maxLength):
+            sum = 0
+            for i in range(len(attributes)):
+                if length[i] > index:
+                    if operator[i] == '+':
+                        sum += assignment.get(attributes[i][index])
+                    else:
+                        sum -= assignment.get(attributes[i][index])
+            if sum < 0:
+                sum += carry
+                carry = sum//-10 + 1
+                if index <= length[-1] - 1:
+                    if(sum + carry*10)!= assignment.get(result[index]):
+                        return False
+                carry *= -1
+            else:
+                if index <= length[-1] - 1:
+                    if (sum + carry) % 10 != assignment.get(result[index]):
+                        return False
+                carry = (sum + carry)//10
+            
+        if carry == 0 and length[-1] > maxLength:
+            return False
+         
          
     return True
-
-
 
 def stringToDec(string, assignment):
     length = len(string)
@@ -317,7 +318,7 @@ def solveCrypta(letters, assignment, possibleDigits, attributes, result, operato
                 
 def convertSubtract(attributes, result):
     temp = attributes[0]
-    attributes[0] = result
+    attributes[0] = result  
     result = temp
     return result
 
@@ -372,18 +373,9 @@ def findMaxLength(attributes, result):
             maxLength = len(attribute)
     return maxLength
         
-
 if __name__ == "__main__":
     equation = readFile("input.txt")
     attributes, result = equation.split('=')
-
-    #Except round brackets
-    equation = convertEquation(attributes)
-    print(equation)
-
-    #An operation array
-    operator = arrayOperator(equation)
-    print(operator)
 
     letters = []
     option = input("Enter operator: ")
@@ -394,6 +386,17 @@ if __name__ == "__main__":
     elif option == 'subtract':
         attributes = attributes.upper().split('-')
         result = convertSubtract(attributes, result)
+    elif option == "level 3":
+        #Except round brackets
+        equation = convertEquation(attributes)
+        #Get elements
+        attributes = []
+        for letter in equation:
+            if letter.isalpha():
+                attributes.append(letter)
+        #An operation array
+        operator = arrayOperator(equation)
+
 
     #Reverse attributes' elements
     for i in range(len(attributes)):
