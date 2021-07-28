@@ -12,7 +12,23 @@ def readFile(fileName):
     f.close()
     return equation
 
-def isValidate(attributes, result, assignment, letters, operator):
+def writeFile(fileName, cryptaSolu, assignment):
+    f = open(fileName, "w")
+    if cryptaSolu == False or cryptaSolu == None:
+        f.write("None")
+    elif cryptaSolu == True:
+        for x in assignment:
+            f.write(str(x[1]))
+    f.close()
+
+def plusLevelOne(attributes, result, assignment):
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    if(elapsed_time > 300): #5 mins
+        print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+        print('No solution')
+        exit()
+
     length = 0
     len_1 = len(attributes[0])
     len_2 = len(attributes[1])
@@ -61,8 +77,7 @@ def isValidate(attributes, result, assignment, letters, operator):
                 return False
     return True
 
-def isManyValidate(attributes, result, assignment, letters, operator):
-    
+def plusLevelTwo(attributes, result, assignment, letters):
     end_time = time.time()
     elapsed_time = end_time - start_time
     if(elapsed_time > 300): #5 mins
@@ -150,8 +165,7 @@ def isManyValidate(attributes, result, assignment, letters, operator):
          
     return True
 
-def isManyValidateTest(attributes, result, assignment, letters, operator):
-    
+def plusSubRoundBracket(attributes, result, assignment, letters, operator):
     end_time = time.time()
     elapsed_time = end_time - start_time
     if(elapsed_time > 300): #5 mins
@@ -266,7 +280,7 @@ def isManyValidateTest(attributes, result, assignment, letters, operator):
          
     return True
 
-def isValidateTest(attributes, result, assignment, letters, operator):
+def multiOperation(attributes, result, assignment, letters):
     end_time = time.time()
     elapsed_time = end_time - start_time
     if(elapsed_time > 300): #5 mins
@@ -300,7 +314,10 @@ def isValidateTest(attributes, result, assignment, letters, operator):
     
     #xét phần tử đầu
     if assignment.get(attributes[1][-1]) is not None and assignment.get(attributes[0][-1]) is not None and assignment.get(result[-1]) is not None:
-        if (assignment.get(attributes[1][-1]) * assignment.get(attributes[0][-1])) // 10 != assignment.get(result[-1]) and (assignment.get(attributes[1][-1]) * assignment.get(attributes[0][-1])) // 10 + 1!= assignment.get(result[-1]) :
+        temp = assignment.get(attributes[1][-1]) * assignment.get(attributes[0][-1])
+        if temp > 9:
+            temp //= 10
+        if temp != assignment.get(result[-1]) and temp + 1!= assignment.get(result[-1]) :
             return False
 
     if len(letters) == len(assignment):
@@ -309,7 +326,6 @@ def isValidateTest(attributes, result, assignment, letters, operator):
         carry = 0
         for index in range(0, length[-1]):
             sum = 0
-            #if index < length[1]:
             for i in range(index + 1):
                 if i < len(arrIndex):
                     if arrIndex[i] < length[0]:
@@ -322,8 +338,108 @@ def isValidateTest(attributes, result, assignment, letters, operator):
             carry = (sum+carry)//10
         
     return True
-        
 
+def solveCryptaLevelFour(letters, assignment, possibleDigits, attributes, result, operator):
+
+    if countAssignRight(possibleDigits) == len(letters):
+        if (checkEquation(attributes, result, assignment, operator)) == True:
+            value = sorted(assignment.items())
+            print(assignment)
+            writeFile("output.txt", True, value)
+            return True
+        return False
+
+    for char in letters:
+        if char not in assignment:
+            letter = char
+            break
+
+    for value in range (len(possibleDigits)):
+        if possibleDigits[value] == False: 
+            assignment = assignment.copy()
+            assignment[letter] = value
+            if multiOperation(attributes, result, assignment, letters) == True:
+                possibleDigits[value] = True
+                check = solveCryptaLevelFour(letters, assignment, possibleDigits, attributes, result, operator)
+                if check == True:
+                    return True
+            possibleDigits[value] = False
+
+def solveCryptaLevelThree(letters, assignment, possibleDigits, attributes, result, operator):
+
+    if countAssignRight(possibleDigits) == len(letters):
+        if (checkEquation(attributes, result, assignment, operator)) == True:
+            value = sorted(assignment.items())
+            print(assignment)
+            writeFile("output.txt", True, value)
+            return True
+        return False
+
+    for char in letters:
+        if char not in assignment:
+            letter = char
+            break
+
+    for value in range (len(possibleDigits)):
+        if possibleDigits[value] == False: 
+            assignment = assignment.copy()
+            assignment[letter] = value
+            if plusSubRoundBracket(attributes, result, assignment, letters, operator) == True:
+                possibleDigits[value] = True
+                check = solveCryptaLevelThree(letters, assignment, possibleDigits, attributes, result, operator)
+                if check == True:
+                    return True
+            possibleDigits[value] = False
+
+def solveCryptaLevelOne(letters, assignment, possibleDigits, attributes, result, operator):
+    if countAssignRight(possibleDigits) == len(letters):
+        if (checkEquation(attributes, result, assignment, operator)) == True:
+            value = sorted(assignment.items())
+            print(assignment)
+            writeFile("output.txt", True, value)
+            return True
+        return False
+
+    for char in letters:
+        if char not in assignment:
+            letter = char
+            break
+
+    for value in range (len(possibleDigits)):
+        if possibleDigits[value] == False: 
+            assignment = assignment.copy()
+            assignment[letter] = value
+            if plusLevelOne(attributes, result, assignment) == True:
+                possibleDigits[value] = True
+                check = solveCryptaLevelOne(letters, assignment, possibleDigits, attributes, result, operator)
+                if check == True:
+                    return True
+            possibleDigits[value] = False
+
+def solveCryptaLevelTwo(letters, assignment, possibleDigits, attributes, result, operator):
+    if countAssignRight(possibleDigits) == len(letters):
+        if (checkEquation(attributes, result, assignment, operator)) == True:
+            value = sorted(assignment.items())
+            print(assignment)
+            writeFile("output.txt", True, value)
+            return True
+        return False
+
+    for char in letters:
+        if char not in assignment:
+            letter = char
+            break
+
+    for value in range (len(possibleDigits)):
+        if possibleDigits[value] == False: 
+            assignment = assignment.copy()
+            assignment[letter] = value
+            if plusLevelTwo(attributes, result, assignment, letters) == True:
+                possibleDigits[value] = True
+                check = solveCryptaLevelTwo(letters, assignment, possibleDigits, attributes, result, operator)
+                if check == True:
+                    return True
+            possibleDigits[value] = False
 
 def stringToDec(string, assignment):
     length = len(string)
@@ -352,36 +468,7 @@ def countAssignRight(digits):
         if index == True:
             count += 1
     return count
-
-def solveCrypta(letters, assignment, possibleDigits, attributes, result, operator):
-
-    if countAssignRight(possibleDigits) == len(letters):
-        print(assignment)
-        if (checkEquation(attributes, result, assignment, operator)) == True:
-            print(assignment)
-            return True
-        return False
-
-    for char in letters:
-        if char not in assignment:
-            letter = char
-            break
-
-    for value in range (len(possibleDigits)):
-        if possibleDigits[value] == False: 
-            assignment = assignment.copy()
-            assignment[letter] = value
-<<<<<<< HEAD
-            if isValidateTest(attributes, result, assignment, letters, operator) == True:
-=======
-            if multiOperator(attributes, result, assignment, letters) == True:
->>>>>>> b47d4b225c9fccbe71f3e3ceb7db2a459757cb6e
-                possibleDigits[value] = True
-                check = solveCrypta(letters, assignment, possibleDigits, attributes, result, operator)
-                if check == True:
-                    return True
-            possibleDigits[value] = False
-                
+           
 def convertSubtract(attributes, result):
     temp = attributes[0]
     attributes[0] = result  
@@ -451,13 +538,26 @@ if __name__ == "__main__":
     option = input("Enter operator: ")
     
     #Take attributes of equation
+    """
+    Operator contains '+': 
+        Enter: plus
+    Operator contains '-': 
+        Enter: subtract
+    Operator contains '+,-,()': 
+        Enter: bracket
+    Operator contains '*': 
+        Enter: multiply
+    """
     if option == 'plus':
         attributes = attributes.upper().split('+')
+
     elif option == 'subtract':
         attributes = attributes.upper().split('-')
         result = convertSubtract(attributes, result)
-        print(result)
-    elif option == "level 3":
+        #convert all '-' to '+'
+        operator = ['+' for x in operator]
+
+    elif option == "bracket":
         #Get elements
         attributes = []
         word = ""
@@ -468,7 +568,8 @@ if __name__ == "__main__":
                 attributes.append(word)
                 word = ""
         attributes.append(word)
-    elif option == "level 4":
+
+    elif option == "multiply":
         attributes = attributes.upper().split('*')
     
     #Reverse attributes' elements
@@ -490,12 +591,66 @@ if __name__ == "__main__":
     #Mark possible digits to assign letters
     possibleDigits = [False] * 10
     
+    #Enter Cryptarithmetic Problem level
+    level = input("Enter level: ")
+    
+    #Solve Cryptarithmetic Problem
+    """
+    Level 1: 
+        Operator + or -, it includes only one operator.
+        Example: A+C=D. 
+        Enter: one
+    Level 2: 
+        Operator + or -, it includes many opterators. 
+        Example: A+B+C=D. 
+        Enter: two
+    Level 3: 
+        Operator +, -, (). 
+        Example: A-(A+B)+D=C. 
+        Enter: three
+    Level 4: 
+        Operator *, it just includes 2 attributes to mutiply. 
+        Example: A*A=B. 
+        Enter: four
+    """
+    cryptaSolution = False
     start_time = time.time()
-    if(not solveCrypta(letters, {}, possibleDigits, attributes, result, operator)):
-        print("None")
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+    if level == "one":
+        cryptaSolution = solveCryptaLevelOne(letters, {}, possibleDigits, attributes, result, operator)
+        if(not cryptaSolution):
+            print("None")
+            writeFile("output.txt", cryptaSolution, {})
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+
+    elif level == "two":
+        cryptaSolution = solveCryptaLevelTwo(letters, {}, possibleDigits, attributes, result, operator)
+        if(not cryptaSolution):
+            print("None")
+            writeFile("output.txt", cryptaSolution, {})
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+
+    elif level == "three":
+        cryptaSolution = solveCryptaLevelFour(letters, {}, possibleDigits, attributes, result, operator)
+        if(not cryptaSolution):
+            print("None")
+            writeFile("output.txt", cryptaSolution, {})
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+
+    elif level == "four":
+        cryptaSolution = solveCryptaLevelFour(letters, {}, possibleDigits, attributes, result, operator)
+        if(not cryptaSolution):
+            print("None")
+            writeFile("output.txt", cryptaSolution, {})
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+    
 
     
     
