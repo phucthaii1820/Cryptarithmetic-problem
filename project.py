@@ -1,6 +1,7 @@
 from typing import Tuple
 import time
 import re
+count = 0
 
 start_time = 0
 end_time = 0
@@ -265,6 +266,65 @@ def isManyValidateTest(attributes, result, assignment, letters, operator):
          
     return True
 
+def isValidateTest(attributes, result, assignment, letters, operator):
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    if(elapsed_time > 300): #5 mins
+        print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+        print('No solution')
+        exit()
+    
+    length = []
+    for i in range(len(attributes)):
+        length.append(len(attributes[i]))
+    length.append(len(result))
+
+    maxLength = 0
+    for i in range(len(length) -1):
+        if length[i] > length[-1]:
+            return False
+        if maxLength < length[i]:
+            maxLength = length[i]
+    
+    if assignment.get(result[- 1], None) == 0:
+        return False
+
+    for attribute in attributes:
+        if assignment.get(attribute[- 1], None) == 0:
+            return False
+
+    #xét phần tử cuối
+    if assignment.get(attributes[1][0]) is not None and assignment.get(attributes[0][0]) is not None and assignment.get(result[0]) is not None:
+        if (assignment.get(attributes[1][0]) * assignment.get(attributes[0][0])) % 10 != assignment.get(result[0]) :
+            return False
+    
+    #xét phần tử đầu
+    if assignment.get(attributes[1][-1]) is not None and assignment.get(attributes[0][-1]) is not None and assignment.get(result[-1]) is not None:
+        if (assignment.get(attributes[1][-1]) * assignment.get(attributes[0][-1])) // 10 != assignment.get(result[-1]) and (assignment.get(attributes[1][-1]) * assignment.get(attributes[0][-1])) // 10 + 1!= assignment.get(result[-1]) :
+            return False
+
+    if len(letters) == len(assignment):
+        arrIndex = [0 for x in range(length[1])]
+        sum = 0
+        carry = 0
+        for index in range(0, length[-1]):
+            sum = 0
+            #if index < length[1]:
+            for i in range(index + 1):
+                if i < len(arrIndex):
+                    if arrIndex[i] < length[0]:
+                        sum += assignment.get(attributes[1][i]) * assignment.get(attributes[0][arrIndex[i]])
+                        arrIndex[i] += 1
+            if (sum + carry) % 10 != assignment.get(result[index]):
+                return False
+            if index == length[-1] -1 and sum + carry > 9:
+                return False
+            carry = (sum+carry)//10
+        
+    return True
+        
+
+
 def stringToDec(string, assignment):
     length = len(string)
     dec = 0
@@ -294,6 +354,7 @@ def countAssignRight(digits):
 def solveCrypta(letters, assignment, possibleDigits, attributes, result, operator):
 
     if countAssignRight(possibleDigits) == len(letters):
+        print(assignment)
         if (checkEquation(attributes, result, assignment, operator)) == True:
             print(assignment)
             return True
@@ -308,7 +369,7 @@ def solveCrypta(letters, assignment, possibleDigits, attributes, result, operato
         if possibleDigits[value] == False: 
             assignment = assignment.copy()
             assignment[letter] = value
-            if isManyValidateTest(attributes, result, assignment, letters, operator) == True:
+            if isValidateTest(attributes, result, assignment, letters, operator) == True:
                 possibleDigits[value] = True
                 check = solveCrypta(letters, assignment, possibleDigits, attributes, result, operator)
                 if check == True:
