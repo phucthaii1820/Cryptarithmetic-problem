@@ -6,21 +6,24 @@ count = 0
 start_time = 0
 end_time = 0
 
+#Read input data from file
 def readFile(fileName):
     f = open(fileName, "r")
     equation = f.readline()
     f.close()
     return equation
 
+#Write the result to file
 def writeFile(fileName, cryptaSolu, assignment):
     f = open(fileName, "w")
     if cryptaSolu == False or cryptaSolu == None:
-        f.write("None")
+        f.write("No Solution")
     elif cryptaSolu == True:
         for x in assignment:
             f.write(str(x[1]))
     f.close()
 
+#Heuristic one operator "+" or "-"
 def plusLevelOne(attributes, result, assignment):
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -37,7 +40,7 @@ def plusLevelOne(attributes, result, assignment):
     if len_2 > len_3 or len_1 > len_3 or abs(max(len_2, len_1) - len_3) > 1:
         return False
 
-    if assignment.get(result[len_3 - 1], None) == 0:
+    if assignment.get(result[-1], None) == 0:
         return False
 
     for attribute in attributes:
@@ -46,11 +49,23 @@ def plusLevelOne(attributes, result, assignment):
     
     length = max(len_1, len_2)
 
+    #Kiểm tra nếu độ dài kết quả lớn hơn độ dài lớn nhất của các phần tử thì chữ số ngoài cùng của kết quả phải bằng 1
     if len_3 > length:
-        if assignment.get(result[len_3-1]) is not None:
-            if assignment.get(result[len_3-1]) != 1:
+        if assignment.get(result[-1]) is not None:
+            if assignment.get(result[-1]) != 1:
                 return False
 
+    #kiểm tra nếu độ dài kết quả bằng bất kì phần tử nào thì tổng của các số ngoài cùng < 9
+    sum = 0
+    if len_3 == length:
+        for i in range(len(attributes)):
+            if len(attributes[i]) == len_3:
+                if assignment.get(attributes[i][-1]) is not None:
+                    sum += assignment.get(attributes[i][-1])
+        if sum > 9:
+            return False
+
+    #Kiểm tra tổng các phần từ trong cùng với kết quả
     if assignment.get(attributes[0][0]) is not None and assignment.get(attributes[1][0]) is not None and assignment.get(result[0]) is not None:
         if (assignment.get(attributes[0][0]) + assignment.get(attributes[1][0]))%10 != assignment.get(result[0]):
             return False
@@ -77,6 +92,7 @@ def plusLevelOne(attributes, result, assignment):
                 return False
     return True
 
+#Heuristic many operators "+" or "-"
 def plusLevelTwo(attributes, result, assignment, letters):
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -148,9 +164,6 @@ def plusLevelTwo(attributes, result, assignment, letters):
     sum = 0
     carry = 0
     if len(letters) == len(assignment):
-        # if not checkEquation(attributes, result, assignment, operator):
-        #     return False
-        #print(assignment)
         for index in range(maxLength):
             sum = 0
             for i in range(len(attributes)):
@@ -165,6 +178,7 @@ def plusLevelTwo(attributes, result, assignment, letters):
          
     return True
 
+#Heuristic many operators "+", "-", and "()"
 def plusSubRoundBracket(attributes, result, assignment, letters, operator):
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -280,6 +294,7 @@ def plusSubRoundBracket(attributes, result, assignment, letters, operator):
          
     return True
 
+#Heuristic one operator "*"
 def multiOperation(attributes, result, assignment, letters):
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -339,6 +354,7 @@ def multiOperation(attributes, result, assignment, letters):
         
     return True
 
+#Solve one operator "*"
 def solveCryptaLevelFour(letters, assignment, possibleDigits, attributes, result, operator):
 
     if countAssignRight(possibleDigits) == len(letters):
@@ -365,6 +381,7 @@ def solveCryptaLevelFour(letters, assignment, possibleDigits, attributes, result
                     return True
             possibleDigits[value] = False
 
+#Solve many operators "+", "-", and "()"
 def solveCryptaLevelThree(letters, assignment, possibleDigits, attributes, result, operator):
 
     if countAssignRight(possibleDigits) == len(letters):
@@ -391,6 +408,7 @@ def solveCryptaLevelThree(letters, assignment, possibleDigits, attributes, resul
                     return True
             possibleDigits[value] = False
 
+#Solve many operators "+" or "-"
 def solveCryptaLevelOne(letters, assignment, possibleDigits, attributes, result, operator):
     if countAssignRight(possibleDigits) == len(letters):
         if (checkEquation(attributes, result, assignment, operator)) == True:
@@ -416,6 +434,7 @@ def solveCryptaLevelOne(letters, assignment, possibleDigits, attributes, result,
                     return True
             possibleDigits[value] = False
 
+#Solve many operators "+" or "-"
 def solveCryptaLevelTwo(letters, assignment, possibleDigits, attributes, result, operator):
     if countAssignRight(possibleDigits) == len(letters):
         if (checkEquation(attributes, result, assignment, operator)) == True:
@@ -441,6 +460,7 @@ def solveCryptaLevelTwo(letters, assignment, possibleDigits, attributes, result,
                     return True
             possibleDigits[value] = False
 
+#Convert from string to decimal
 def stringToDec(string, assignment):
     length = len(string)
     dec = 0
@@ -448,6 +468,7 @@ def stringToDec(string, assignment):
         dec += assignment[string[index]] * (10**(index))
     return dec
 
+#Check attributes and operators with result in decimal form
 def checkEquation(attributes, result, assignment, operator):
     Attri = 0
     for i in range(len(attributes)):
@@ -462,19 +483,23 @@ def checkEquation(attributes, result, assignment, operator):
 
     return Attri == total
 
+#Count letters whose values is correctly assigned
 def countAssignRight(digits):
     count = 0
     for index in digits:
         if index == True:
             count += 1
     return count
-           
+
+#Convert subtract to plus. Then solve the problem with plus operator.
+#Example: A-B=C -> C+B=A   
 def convertSubtract(attributes, result):
     temp = attributes[0]
     attributes[0] = result  
     result = temp
     return result
 
+#Remove round bracket and change operators inside if neccessary.
 def convertEquation(equation):
     newEquation = []
     roundBracket = []
@@ -508,6 +533,7 @@ def convertEquation(equation):
         newEquation.append(equation[index])     
     return ''.join(str(ele) for ele in newEquation)
 
+#Initial an operator array
 def arrayOperator(equation):
     operator = []
     operator.append('+')
@@ -516,6 +542,7 @@ def arrayOperator(equation):
             operator.append(equation[index])
     return operator
 
+#Find max length between attributes and result which is used to take unique letters from input
 def findMaxLength(attributes, result):
     maxLength = len(result)
 
@@ -554,7 +581,7 @@ if __name__ == "__main__":
     elif option == 'subtract':
         attributes = attributes.upper().split('-')
         result = convertSubtract(attributes, result)
-        #convert all '-' to '+'
+        #convert all '-' to '+'.
         operator = ['+' for x in operator]
 
     elif option == "bracket":
@@ -618,7 +645,7 @@ if __name__ == "__main__":
     if level == "one":
         cryptaSolution = solveCryptaLevelOne(letters, {}, possibleDigits, attributes, result, operator)
         if(not cryptaSolution):
-            print("None")
+            print("No Solution")
             writeFile("output.txt", cryptaSolution, {})
         end_time = time.time()
         elapsed_time = end_time - start_time
@@ -627,16 +654,16 @@ if __name__ == "__main__":
     elif level == "two":
         cryptaSolution = solveCryptaLevelTwo(letters, {}, possibleDigits, attributes, result, operator)
         if(not cryptaSolution):
-            print("None")
+            print("No Solution")
             writeFile("output.txt", cryptaSolution, {})
         end_time = time.time()
         elapsed_time = end_time - start_time
         print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
 
     elif level == "three":
-        cryptaSolution = solveCryptaLevelFour(letters, {}, possibleDigits, attributes, result, operator)
+        cryptaSolution = solveCryptaLevelThree(letters, {}, possibleDigits, attributes, result, operator)
         if(not cryptaSolution):
-            print("None")
+            print("No Solution")
             writeFile("output.txt", cryptaSolution, {})
         end_time = time.time()
         elapsed_time = end_time - start_time
@@ -645,7 +672,7 @@ if __name__ == "__main__":
     elif level == "four":
         cryptaSolution = solveCryptaLevelFour(letters, {}, possibleDigits, attributes, result, operator)
         if(not cryptaSolution):
-            print("None")
+            print("No Solution")
             writeFile("output.txt", cryptaSolution, {})
         end_time = time.time()
         elapsed_time = end_time - start_time
