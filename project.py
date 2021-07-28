@@ -277,8 +277,10 @@ def checkEquation(attributes, result, assignment, operator):
     for i in range(len(attributes)):
         if operator[i] == '+':
             Attri += stringToDec(attributes[i], assignment)
-        else :
+        elif operator[i] == '-':
             Attri -= stringToDec(attributes[i], assignment)
+        elif operator[i] == '*':
+            Attri *= stringToDec(attributes[i], assignment)
     
     total = stringToDec(result, assignment)
 
@@ -308,7 +310,7 @@ def solveCrypta(letters, assignment, possibleDigits, attributes, result, operato
         if possibleDigits[value] == False: 
             assignment = assignment.copy()
             assignment[letter] = value
-            if isManyValidateTest(attributes, result, assignment, letters, operator) == True:
+            if multiOperator(attributes, result, assignment, letters) == True:
                 possibleDigits[value] = True
                 check = solveCrypta(letters, assignment, possibleDigits, attributes, result, operator)
                 if check == True:
@@ -369,10 +371,6 @@ def findMaxLength(attributes, result):
         if len(attribute) > maxLength:
             maxLength = len(attribute)
     return maxLength
-
-def multiOperator(attributes, result, assignment, letters):
-    print("A")
-
 
 if __name__ == "__main__":
     equation = readFile("input.txt")
