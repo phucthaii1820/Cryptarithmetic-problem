@@ -60,7 +60,6 @@ def isValidate(attributes, result, assignment, letters, operator):
                 return False
     return True
 
-
 def isManyValidate(attributes, result, assignment, letters, operator):
     
     end_time = time.time()
@@ -327,7 +326,6 @@ def convertEquation(equation):
     roundBracket = []
     checkSubtract = False
     
-
     for index in range(len(equation)):
         if equation[index] == '(':
             if index == 0:
@@ -371,7 +369,11 @@ def findMaxLength(attributes, result):
         if len(attribute) > maxLength:
             maxLength = len(attribute)
     return maxLength
-        
+
+def multiOperator(attributes, result, assignment, letters):
+    print("A")
+
+
 if __name__ == "__main__":
     equation = readFile("input.txt")
     attributes, result = equation.split('=')
@@ -403,7 +405,9 @@ if __name__ == "__main__":
                 attributes.append(word)
                 word = ""
         attributes.append(word)
-
+    elif option == "level 4":
+        attributes = attributes.upper().split('*')
+    
     #Reverse attributes' elements
     for i in range(len(attributes)):
         attributes[i] = attributes[i][::-1]
@@ -420,7 +424,9 @@ if __name__ == "__main__":
         if  len(result) > i and result[i] not in letters:
             letters.append(result[i])
     
+    #Mark possible digits to assign letters
     possibleDigits = [False] * 10
+    
     start_time = time.time()
     if(not solveCrypta(letters, {}, possibleDigits, attributes, result, operator)):
         print("None")

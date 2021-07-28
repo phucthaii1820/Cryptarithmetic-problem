@@ -1,1 +1,1 @@
-(A-B+C)-(E-FF+EE)=D
+A*B=C
