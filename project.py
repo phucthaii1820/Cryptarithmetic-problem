@@ -37,7 +37,7 @@ def plusLevelOne(attributes, result, assignment):
     len_2 = len(attributes[1])
     len_3 = len(result)
 
-    if len_2 > len_3 or len_1 > len_3 or abs(max(len_2, len_1) - len_3) > 1:
+    if len_2 > len_3 or len_1 > len_3 or max(len_2, len_1) - len_3 > 1 or len_3 - max(len_2, len_1) > 0:
         return False
 
     if assignment.get(result[-1], None) == 0:
@@ -144,7 +144,7 @@ def plusLevelTwo(attributes, result, assignment, letters):
                 carry += 1
 
         if assignment.get(result[-1]) is not None:
-            if assignment.get(result[-1]) > carry - 1:
+            if assignment.get(result[-1]) > carry:
                 return False
 
     #kiểm tra các số trong cùng của các phần tử có giá trị không
@@ -236,7 +236,7 @@ def plusSubRoundBracket(attributes, result, assignment, letters, operator):
                 carry += 1
 
         if assignment.get(result[-1]) is not None:
-            if assignment.get(result[-1]) > carry - 1:
+            if assignment.get(result[-1]) > carry:
                 return False
 
     #kiểm tra các số trong cùng của các phần tử có giá trị không
@@ -327,13 +327,13 @@ def multiOperation(attributes, result, assignment, letters):
         if (assignment.get(attributes[1][0]) * assignment.get(attributes[0][0])) % 10 != assignment.get(result[0]) :
             return False
     
-    #xét phần tử đầu
-    if assignment.get(attributes[1][-1]) is not None and assignment.get(attributes[0][-1]) is not None and assignment.get(result[-1]) is not None:
-        temp = assignment.get(attributes[1][-1]) * assignment.get(attributes[0][-1])
-        if temp > 9:
-            temp //= 10
-        if temp != assignment.get(result[-1]) and temp + 1!= assignment.get(result[-1]) :
-            return False
+    # #xét phần tử đầu
+    # if assignment.get(attributes[1][-1]) is not None and assignment.get(attributes[0][-1]) is not None and assignment.get(result[-1]) is not None:
+    #     temp = assignment.get(attributes[1][-1]) * assignment.get(attributes[0][-1])
+    #     if temp > 9:
+    #         temp //= 10
+    #     if temp != assignment.get(result[-1]) and temp + 1!= assignment.get(result[-1]) :
+    #         return False
 
     if len(letters) == len(assignment):
         arrIndex = [0 for x in range(length[1])]
@@ -355,7 +355,7 @@ def multiOperation(attributes, result, assignment, letters):
     return True
 
 #Solve one operator "*"
-def solveCryptaLevelFour(letters, assignment, possibleDigits, attributes, result, operator):
+def solveCryptaLevelFour(letters, assignment, possibleDigits, attributes, result, operator):    
 
     if countAssignRight(possibleDigits) == len(letters):
         if (checkEquation(attributes, result, assignment, operator)) == True:
