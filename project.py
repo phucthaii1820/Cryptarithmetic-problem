@@ -37,7 +37,7 @@ def plusLevelOne(attributes, result, assignment):
     len_2 = len(attributes[1])
     len_3 = len(result)
 
-    if len_2 > len_3 or len_1 > len_3 or max(len_2, len_1) - len_3 > 1 or len_3 - max(len_2, len_1) > 0:
+    if len_2 > len_3 or len_1 > len_3 or max(len_2, len_1) - len_3 >  max(len_2, len_1)- len_3 > 0 or len_3 - max(len_2, len_1) > 1:
         return False
 
     if assignment.get(result[-1], None) == 0:
@@ -168,7 +168,7 @@ def plusLevelTwo(attributes, result, assignment, letters):
             sum = 0
             for i in range(len(attributes)):
                 if length[i] > index:
-                        sum += assignment.get(attributes[i][index])
+                    sum += assignment.get(attributes[i][index])
             if (sum + carry) % 10 != assignment.get(result[index]):
                 return False
             carry = (sum + carry)//10
@@ -243,7 +243,7 @@ def plusSubRoundBracket(attributes, result, assignment, letters, operator):
     check = True
     for i in range(len(attributes)):
         if assignment.get(attributes[i][0]) is None:
-                    check = False
+                check = False
 
     #checked
     #kiểm tra tổng % 10 của số cuối của các phần tử có bằng kết quả không
