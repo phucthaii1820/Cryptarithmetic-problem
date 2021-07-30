@@ -536,41 +536,14 @@ def findMaxLength(attributes, result):
             maxLength = len(attribute)
     return maxLength
 
-if __name__ == "__main__":
-    equation = readFile("input.txt")
-    attributes, result = equation.split('=')
-
+def handleInput(attributes, result):
     #Except round brackets
     equation = convertEquation(attributes)
 
     #An operation array
     operator = arrayOperator(equation)
 
-    letters = []
-    option = input("Enter operator: ")
-    
-    #Take attributes of equation
-    """
-    Operator contains '+': 
-        Enter: plus
-    Operator contains '-': 
-        Enter: subtract
-    Operator contains '+,-,()': 
-        Enter: bracket
-    Operator contains '*': 
-        Enter: multiply
-    """
-    if option == 'plus':
-        attributes = attributes.upper().split('+')
-
-    elif option == 'subtract':
-        attributes = attributes.upper().split('-')
-        result = convertSubtract(attributes, result)
-        #convert all '-' to '+'.
-        operator = ['+' for x in operator]
-
-    elif option == "bracket":
-        #Get elements
+    if attributes.find("(") != -1:
         attributes = []
         word = ""
         for letter in equation:
@@ -580,10 +553,82 @@ if __name__ == "__main__":
                 attributes.append(word)
                 word = ""
         attributes.append(word)
+        level = "three"
 
-    elif option == "multiply":
+    elif attributes.find("+") != -1 and attributes.find("-") == -1:
+        attributes = attributes.upper().split('+')
+        if len(operator) == 2:
+            level = "one"
+        elif len(operator) > 2:
+            level = "two"
+            
+    elif attributes.find("+") == -1 and attributes.find("-") != -1:
+        attributes = attributes.upper().split('-')
+        result = convertSubtract(attributes, result)
+        #convert all '-' to '+'.
+        operator = ['+' for x in operator]
+        if len(operator) == 2:
+            level = "one"
+        elif len(operator) > 2:
+            level = "two"
+
+    elif attributes.find("*") != -1:
         attributes = attributes.upper().split('*')
+        level = "four"
     
+    return [attributes, result, operator, level]
+
+
+if __name__ == "__main__":
+    equation = readFile("input.txt")
+    attributes, result = equation.split('=')
+
+    # #Except round brackets
+    # equation = convertEquation(attributes)
+
+    # #An operation array
+    # operator = arrayOperator(equation)
+
+    # option = input("Enter operator: ")
+    
+    # #Take attributes of equation
+    # """
+    # Operator contains '+': 
+    #     Enter: plus
+    # Operator contains '-': 
+    #     Enter: subtract
+    # Operator contains '+,-,()': 
+    #     Enter: bracket
+    # Operator contains '*': 
+    #     Enter: multiply
+    # """
+    # if option == 'plus':
+    #     attributes = attributes.upper().split('+')
+
+    # elif option == 'subtract':
+    #     attributes = attributes.upper().split('-')
+    #     result = convertSubtract(attributes, result)
+    #     #convert all '-' to '+'.
+    #     operator = ['+' for x in operator]
+
+    # elif option == "bracket":
+    #     #Get elements
+    #     attributes = []
+    #     word = ""
+    #     for letter in equation:
+    #         if letter.isalpha():
+    #             word += str(letter)
+    #         elif not letter.isalpha():
+    #             attributes.append(word)
+    #             word = ""
+    #     attributes.append(word)
+
+    # elif option == "multiply":
+    #     attributes = attributes.upper().split('*')
+
+    attributes, result, operator, level = handleInput(attributes, result)
+    
+    letters = []
     #Reverse attributes' elements
     for i in range(len(attributes)):
         attributes[i] = attributes[i][::-1]
@@ -603,8 +648,8 @@ if __name__ == "__main__":
     #Mark possible digits to assign letters
     possibleDigits = [False] * 10
     
-    #Enter Cryptarithmetic Problem level
-    level = input("Enter level: ")
+    # #Enter Cryptarithmetic Problem level
+    # level = input("Enter level: ")
     
     #Solve Cryptarithmetic Problem
     """
