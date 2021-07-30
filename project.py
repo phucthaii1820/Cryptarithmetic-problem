@@ -1,6 +1,5 @@
 from typing import Tuple
 import time
-import re
 count = 0
 
 start_time = 0
@@ -16,7 +15,7 @@ def readFile(fileName):
 #Write the result to file
 def writeFile(fileName, cryptaSolu, assignment):
     f = open(fileName, "w")
-    if cryptaSolu == False or cryptaSolu == None:
+    if cryptaSolu == False:
         f.write("No Solution")
     elif cryptaSolu == True:
         for x in assignment:
@@ -194,13 +193,8 @@ def plusSubRoundBracket(attributes, result, assignment, letters, operator):
 
     maxLength = 0
     for i in range(len(length) -1):
-        # if length[i] > length[-1]:
-        #     return False
         if maxLength < length[i]:
             maxLength = length[i]
-    
-    # if maxLength - length[-1] > 1:
-    #     return False
     
 
     if assignment.get(result[- 1], None) == 0:
@@ -210,7 +204,6 @@ def plusSubRoundBracket(attributes, result, assignment, letters, operator):
         if assignment.get(attribute[- 1], None) == 0:
             return False
 
-    #checked
     #kiểm tra nếu độ dài kết quả bằng bất kì phần tử nào thì tổng của các số ngoài cùng < 9
     sum = 0
     if length[-1] == maxLength:
@@ -225,8 +218,6 @@ def plusSubRoundBracket(attributes, result, assignment, letters, operator):
         if sum > 9 or sum < 0:
             return False
 
-
-    #checked
     #Nếu độ dài của kết quả lớn hơn tất cả phần tử thì số ngoài cùng của kết quả phài <= biến nhớ
     if length[-1] > maxLength:
         carry = 0
@@ -245,7 +236,6 @@ def plusSubRoundBracket(attributes, result, assignment, letters, operator):
         if assignment.get(attributes[i][0]) is None:
                 check = False
 
-    #checked
     #kiểm tra tổng % 10 của số cuối của các phần tử có bằng kết quả không
     if check and assignment.get(result[0]) is not None:
         sum = 0
@@ -264,9 +254,6 @@ def plusSubRoundBracket(attributes, result, assignment, letters, operator):
     sum = 0
     carry = 0
     if len(letters) == len(assignment):
-        # if not checkEquation(attributes, result, assignment, operator):
-        #     return False
-        #print(assignment)
         for index in range(maxLength):
             sum = 0
             for i in range(len(attributes)):
@@ -277,9 +264,13 @@ def plusSubRoundBracket(attributes, result, assignment, letters, operator):
                         sum -= assignment.get(attributes[i][index])
             if sum < 0:
                 sum += carry
-                carry = sum//-10 + 1
+                if sum %10 != 0:
+                    carry = sum//-10 + 1
+                else:
+                    carry = sum//-10
+
                 if index <= length[-1] - 1:
-                    if(sum + carry*10)!= assignment.get(result[index]):
+                    if(sum + carry*10)%10!= assignment.get(result[index]):
                         return False
                 carry *= -1
             else:
@@ -289,9 +280,7 @@ def plusSubRoundBracket(attributes, result, assignment, letters, operator):
                 carry = (sum + carry)//10
             
         if carry == 0 and length[-1] > maxLength:
-            return False
-         
-         
+            return False  
     return True
 
 #Heuristic one operator "*"
@@ -327,14 +316,6 @@ def multiOperation(attributes, result, assignment, letters):
         if (assignment.get(attributes[1][0]) * assignment.get(attributes[0][0])) % 10 != assignment.get(result[0]) :
             return False
     
-    # #xét phần tử đầu
-    # if assignment.get(attributes[1][-1]) is not None and assignment.get(attributes[0][-1]) is not None and assignment.get(result[-1]) is not None:
-    #     temp = assignment.get(attributes[1][-1]) * assignment.get(attributes[0][-1])
-    #     if temp > 9:
-    #         temp //= 10
-    #     if temp != assignment.get(result[-1]) and temp + 1!= assignment.get(result[-1]) :
-    #         return False
-
     if len(letters) == len(assignment):
         arrIndex = [0 for x in range(length[1])]
         sum = 0
@@ -380,6 +361,7 @@ def solveCryptaLevelFour(letters, assignment, possibleDigits, attributes, result
                 if check == True:
                     return True
             possibleDigits[value] = False
+    return False
 
 #Solve many operators "+", "-", and "()"
 def solveCryptaLevelThree(letters, assignment, possibleDigits, attributes, result, operator):
@@ -407,6 +389,7 @@ def solveCryptaLevelThree(letters, assignment, possibleDigits, attributes, resul
                 if check == True:
                     return True
             possibleDigits[value] = False
+    return False
 
 #Solve many operators "+" or "-"
 def solveCryptaLevelOne(letters, assignment, possibleDigits, attributes, result, operator):
@@ -433,6 +416,7 @@ def solveCryptaLevelOne(letters, assignment, possibleDigits, attributes, result,
                 if check == True:
                     return True
             possibleDigits[value] = False
+    return False
 
 #Solve many operators "+" or "-"
 def solveCryptaLevelTwo(letters, assignment, possibleDigits, attributes, result, operator):
@@ -459,6 +443,7 @@ def solveCryptaLevelTwo(letters, assignment, possibleDigits, attributes, result,
                 if check == True:
                     return True
             possibleDigits[value] = False
+    return False
 
 #Convert from string to decimal
 def stringToDec(string, assignment):
